@@ -5,7 +5,7 @@ import java.util.List;
 import com.rishabh.ecommerce.entities.Product;
 
 public interface ProductService {
-    Product createProducts(Product product);
+    Product createProduct(Product product);
 
     List<Product> getAllProducts();
 

@@ -17,7 +17,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public Product createProducts(Product product) {
+    public Product createProduct(Product product) {
         return productRepository.save(product);
 
     }
@@ -38,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
         Product newProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("cannot find product by id " + id));
 
+        newProduct.setProductName(productDetails.getProductName());
         newProduct.setPrice(productDetails.getPrice());
         newProduct.setDescription(productDetails.getDescription());
         newProduct.setCategory(productDetails.getCategory());
