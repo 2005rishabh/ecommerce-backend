@@ -3,13 +3,15 @@ package com.rishabh.ecommerce.entities;
 
 import java.time.LocalDateTime;
 
-import javax.management.relation.Role;
+import com.rishabh.ecommerce.entities.Role;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +48,8 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
     @NotNull(message = "must assign some role")
     private Role role;
 
