@@ -2,6 +2,7 @@ package com.rishabh.ecommerce.entities;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.ManyToAny;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "product")
+@Table(name = "orders")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -43,6 +45,7 @@ public class Order {
     @Column(name = "status", nullable = false)
     private Status status;
 
+    @ManyToOne
     @NotNull(message = "must mention what is the role of person")
     private User user;
 

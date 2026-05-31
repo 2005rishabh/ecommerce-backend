@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "product")
+@Table(name = "order_items")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,15 +35,16 @@ public class OrderItem {
     @Column(nullable = false)
     private int price;
 
-
     @Column(nullable = false)
     private int quantity;
 
     @NotNull(message = "subtotal cannot pe null")
     private int subtotal;
 
+    @ManyToOne
     private Product product;
 
+    @ManyToOne
     private Order order;
 
     @CreatedDate
