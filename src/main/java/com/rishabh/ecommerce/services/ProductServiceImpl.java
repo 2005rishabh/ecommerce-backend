@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.rishabh.ecommerce.dto.ProductRequest;
+import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
 import com.rishabh.ecommerce.repositories.ProductRepository;
 
@@ -17,14 +19,46 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ProductResponse createProduct(ProductRequest request) {
+        Product productEntity = Product.builder()
+                .productName(request.getProductName())
+                .description(request.getDescription())
+                .price(request.getPrice())
+                .stock(request.getStock())
+                .category(request.getCategory())
+                .build();
+
+        Product savedEntity = productRepository.save(productEntity);
+
+        return ProductResponse.builder()
+                .id(savedEntity.getId())
+                .productName(savedEntity.getProductName())
+                .description(savedEntity.getDescription())
+                .price(savedEntity.getPrice())
+                .stock(savedEntity.getStock())
+                .category(savedEntity.getCategory())
+                .createdAt(savedEntity.getCreatedAt())
+                .updatedAt(savedEntity.getUpdatedAt())
+                .build();
 
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream()
+                .map(product -> ProductResponse.builder()
+                        .id(product.getId())
+                        .productName(product.getProductName())
+                        .description(product.getDescription())
+                        .price(product.getPrice())
+                        .stock(product.getStock())
+                        .category(product.getCategory())
+                        .createdAt(product.getCreatedAt())
+                        .updatedAt(product.getUpdatedAt())
+                        .build())
+                .toList();
     }
 
     @Override
