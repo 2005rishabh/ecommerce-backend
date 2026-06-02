@@ -16,85 +16,96 @@ import lombok.RequiredArgsConstructor;
 
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
+        private final ProductRepository productRepository;
 
-    @Override
-    public ProductResponse createProduct(ProductRequest request) {
-        Product productEntity = Product.builder()
-                .productName(request.getProductName())
-                .description(request.getDescription())
-                .price(request.getPrice())
-                .stock(request.getStock())
-                .category(request.getCategory())
-                .build();
+        @Override
+        public ProductResponse createProduct(ProductRequest request) {
+                Product productEntity = Product.builder()
+                                .productName(request.getProductName())
+                                .description(request.getDescription())
+                                .price(request.getPrice())
+                                .stock(request.getStock())
+                                .category(request.getCategory())
+                                .build();
 
-        Product savedEntity = productRepository.save(productEntity);
+                Product savedEntity = productRepository.save(productEntity);
 
-        return ProductResponse.builder()
-                .id(savedEntity.getId())
-                .productName(savedEntity.getProductName())
-                .description(savedEntity.getDescription())
-                .price(savedEntity.getPrice())
-                .stock(savedEntity.getStock())
-                .category(savedEntity.getCategory())
-                .createdAt(savedEntity.getCreatedAt())
-                .updatedAt(savedEntity.getUpdatedAt())
-                .build();
+                return ProductResponse.builder()
+                                .id(savedEntity.getId())
+                                .productName(savedEntity.getProductName())
+                                .description(savedEntity.getDescription())
+                                .price(savedEntity.getPrice())
+                                .stock(savedEntity.getStock())
+                                .category(savedEntity.getCategory())
+                                .createdAt(savedEntity.getCreatedAt())
+                                .updatedAt(savedEntity.getUpdatedAt())
+                                .build();
 
-    }
+        }
 
-    @Override
-    public List<ProductResponse> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+        @Override
+        public List<ProductResponse> getAllProducts() {
+                List<Product> products = productRepository.findAll();
 
-        return products.stream()
-                .map(product -> ProductResponse.builder()
-                        .id(product.getId())
-                        .productName(product.getProductName())
-                        .description(product.getDescription())
-                        .price(product.getPrice())
-                        .stock(product.getStock())
-                        .category(product.getCategory())
-                        .createdAt(product.getCreatedAt())
-                        .updatedAt(product.getUpdatedAt())
-                        .build())
-                .toList();
-    }
+                return products.stream()
+                                .map(product -> ProductResponse.builder()
+                                                .id(product.getId())
+                                                .productName(product.getProductName())
+                                                .description(product.getDescription())
+                                                .price(product.getPrice())
+                                                .stock(product.getStock())
+                                                .category(product.getCategory())
+                                                .createdAt(product.getCreatedAt())
+                                                .updatedAt(product.getUpdatedAt())
+                                                .build())
+                                .toList();
+        }
 
-    @Override
-    public ProductResponse getProductById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("cannot find product by id " + id));
+        @Override
+        public ProductResponse getProductById(Long id) {
+                Product product = productRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("cannot find product by id " + id));
 
-        return ProductResponse.builder()
-                .id(product.getId())
-                .productName(product.getProductName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .category(product.getCategory())
-                .createdAt(product.getCreatedAt())
-                .updatedAt(product.getUpdatedAt())
-                .build();
-    }
+                return ProductResponse.builder()
+                                .id(product.getId())
+                                .productName(product.getProductName())
+                                .description(product.getDescription())
+                                .price(product.getPrice())
+                                .stock(product.getStock())
+                                .category(product.getCategory())
+                                .createdAt(product.getCreatedAt())
+                                .updatedAt(product.getUpdatedAt())
+                                .build();
+        }
 
-    @Override
-    public Product updateProductDetails(Long id, Product productDetails) {
-        Product newProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("cannot find product by id " + id));
+        @Override
+        public ProductResponse updateProductDetails(Long id, ProductRequest productDetails) {
+                Product newProduct = productRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("cannot find product by id " + id));
 
-        newProduct.setProductName(productDetails.getProductName());
-        newProduct.setPrice(productDetails.getPrice());
-        newProduct.setDescription(productDetails.getDescription());
-        newProduct.setCategory(productDetails.getCategory());
-        newProduct.setPrice(productDetails.getPrice());
-        newProduct.setStock(productDetails.getStock());
+                newProduct.setProductName(productDetails.getProductName());
+                newProduct.setPrice(productDetails.getPrice());
+                newProduct.setDescription(productDetails.getDescription());
+                newProduct.setCategory(productDetails.getCategory());
+                newProduct.setPrice(productDetails.getPrice());
+                newProduct.setStock(productDetails.getStock());
 
-        return null;
-    }
+                Product savedEntity = productRepository.save(newProduct);
+                return ProductResponse.builder()
+                                .id(savedEntity.getId())
+                                .productName(savedEntity.getProductName())
+                                .description(savedEntity.getDescription())
+                                .price(savedEntity.getPrice())
+                                .stock(savedEntity.getStock())
+                                .category(savedEntity.getCategory())
+                                .createdAt(savedEntity.getCreatedAt())
+                                .updatedAt(savedEntity.getUpdatedAt())
+                                .build();
+        }
 
-    @Override
-    public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
-    }
+        @Override
+        public void deleteProduct(Long id) {
+                productRepository.deleteById(id);
+                
+        }
 }
