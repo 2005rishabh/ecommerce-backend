@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.rishabh.ecommerce.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    boolean isExistsByUsername(String username);
+    boolean existsByUsername(String username);
 
-    boolean isExistsByEmail(String email);
+    boolean existsByEmail(String email);
 }

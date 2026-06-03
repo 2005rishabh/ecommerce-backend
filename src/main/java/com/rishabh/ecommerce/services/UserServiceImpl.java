@@ -20,11 +20,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest request) {
-        if (userRepository.isExistsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username is already taken");
         }
 
-        if (userRepository.isExistsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistsException("Email is already taken");
         }
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User no Found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         return mapToResponse(user);
 
     }
@@ -60,12 +60,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not Found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setRole(request.getRole());
-        user.setCreatedAt(request.getCreatedAt());
         user.setUpdatedAt(request.getUpdatedAt());
 
         User savedUser = userRepository.save(user);
@@ -77,7 +76,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not Found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(user);
 

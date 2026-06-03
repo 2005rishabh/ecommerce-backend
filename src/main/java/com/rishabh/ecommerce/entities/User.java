@@ -1,6 +1,5 @@
 package com.rishabh.ecommerce.entities;
 
-
 import java.time.LocalDateTime;
 
 import com.rishabh.ecommerce.entities.Role;
@@ -33,7 +32,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 
 public class User {
     @Id
