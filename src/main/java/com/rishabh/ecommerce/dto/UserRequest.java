@@ -2,6 +2,8 @@ package com.rishabh.ecommerce.dto;
 
 import java.time.LocalDateTime;
 
+import com.rishabh.ecommerce.entities.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,7 @@ public class UserRequest {
 
     private String email;
 
-    private String role;
+    private Role role;
 
     private LocalDateTime createdAt;
 

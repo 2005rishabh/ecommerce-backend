@@ -26,6 +26,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleUserExists(UserAlreadyExistsException userAlreadyExistsException) {
+        ApiError apiError = new ApiError(
+            HttpStatus.BAD_REQUEST,
+            userAlreadyExistsException.getMessage(), 
+            LocalDateTime.now(), 
+            Collections.singletonList("User already exists")
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
 
@@ -54,5 +66,4 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }

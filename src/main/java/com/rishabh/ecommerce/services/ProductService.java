@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
-import com.rishabh.ecommerce.entities.Product;
 
 public interface ProductService {
-    
+
     ProductResponse createProduct(ProductRequest request);
 
     List<ProductResponse> getAllProducts();
