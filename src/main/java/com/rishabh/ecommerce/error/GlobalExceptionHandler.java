@@ -1,4 +1,4 @@
-package com.rishabh.ecommerce.services;
+package com.rishabh.ecommerce.error;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.rishabh.ecommerce.error.ProductNotFoundException;
 
 @RestControllerAdvice
 

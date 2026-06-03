@@ -1,4 +1,4 @@
-package com.rishabh.ecommerce.services;
+package com.rishabh.ecommerce.error;
 
 import java.time.LocalDateTime;
 import java.util.List;
