@@ -3,7 +3,6 @@ package com.rishabh.ecommerce.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
 import com.rishabh.ecommerce.services.UserService;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/users")
@@ -36,7 +33,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> gellAllUsers() {
-        List<UserResponse> listRepo = userService.getAllProducts();
+        List<UserResponse> listRepo = userService.gellAllUsers();
         return ResponseEntity.ok(listRepo);
     }
 
@@ -48,7 +45,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(Long id, UserRequest request) {
-        UserResponse response = userService.updateProductDetails(id, request);
+        UserResponse response = userService.updateUser(id, request);
         return ResponseEntity.ok(response);
     }
 
