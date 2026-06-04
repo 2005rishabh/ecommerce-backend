@@ -1,33 +1,38 @@
 package com.rishabh.ecommerce.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.rishabh.ecommerce.dto.OrderItemRequest;
+import com.rishabh.ecommerce.dto.OrderItemResponse;
 import com.rishabh.ecommerce.dto.OrderRequest;
 import com.rishabh.ecommerce.dto.OrderResponse;
 import com.rishabh.ecommerce.entities.Order;
+import com.rishabh.ecommerce.entities.OrderItem;
+import com.rishabh.ecommerce.entities.Product;
 import com.rishabh.ecommerce.entities.Status;
 import com.rishabh.ecommerce.entities.User;
 import com.rishabh.ecommerce.error.ProductNotFoundException;
 import com.rishabh.ecommerce.repositories.OrderItemRepository;
 import com.rishabh.ecommerce.repositories.OrderRepository;
+import com.rishabh.ecommerce.repositories.ProductRepository;
 import com.rishabh.ecommerce.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
 
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderService {
 
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
-    private final ProductService productService;
+    private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -36,9 +41,9 @@ public class OrderServiceImpl implements OrderService{
 
         // check kro ki aisa koi user hai ki nahi validate kro
         User user = userRepository.findById(orderRequest.getUserId())
-        .orElseThrow(() -> new ProductNotFoundException("User not found id " + orderRequest.getUserId()));
+                .orElseThrow(() -> new ProductNotFoundException("User not found id " + orderRequest.getUserId()));
 
-        //order entity ser karo
+        // order entity ser karo
         Order order = new Order();
         order.setOrderNumber("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         order.setStatus(Status.PENDING);
@@ -46,9 +51,62 @@ public class OrderServiceImpl implements OrderService{
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
-        //loop through cart items and 
-        
-        return null;
+        // loop through cart items to calc cost & build entities
+        List<OrderItem> orderItems = new ArrayList<>();
+        int totalOrderAmount = 0;
+
+        for (OrderItemRequest itemRequest : orderRequest.getItems()) {
+            Product product = productRepository.findById(itemRequest.getProductId())
+                    .orElseThrow(
+                            () -> new ProductNotFoundException("No product found by id " + itemRequest.getProductId()));
+
+            int productPrice = product.getPrice();
+            int quantity = itemRequest.getQuantity();
+            int subtotal = productPrice * quantity;
+
+            totalOrderAmount += subtotal;
+
+            OrderItem orderItem = OrderItem.builder()
+                    .product(product)
+                    .quantity(quantity)
+                    .price(productPrice)
+                    .order(order)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
+            orderItems.add(orderItem);
+        }
+
+        order.setTotalAmount(totalOrderAmount);
+        Order saveOrder = orderRepository.save(order);
+
+        orderItemRepository.saveAll(orderItems);
+
+        return mapToOrderResponse(saveOrder, orderItems);
+    }
+
+    private OrderResponse mapToOrderResponse(Order saveOrder, List<OrderItem> orderItems) {
+        List<OrderItemResponse> itemResponses = orderItems.stream()
+                .map(item -> OrderItemResponse.builder()
+                        .id(item.getId())
+                        .productId(item.getProduct().getId())
+                        .productName(item.getProduct().getProductName())
+                        .quantity(item.getQuantity())
+                        .price(item.getPrice())
+                        .subtotal(item.getSubtotal())
+                        .build())
+                .toList();
+
+        return OrderResponse.builder()
+        .id(saveOrder.getId())
+        .orderNumber(saveOrder.getOrderNumber())
+        .totalAmount(saveOrder.getTotalAmount())
+        .status(saveOrder.getStatus())
+        .createdAt(saveOrder.getCreatedAt())
+        .updatedAt(saveOrder.getUpdatedAt())
+        .items(itemResponses)
+        .build();
     }
 
     @Override
