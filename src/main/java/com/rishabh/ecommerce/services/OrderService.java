@@ -12,7 +12,8 @@ public interface OrderService {
 
     OrderResponse getOrderById(Long id);
 
-    OrderResponse updateOrder(Long id, OrderRequest request, Long reqUserId); // i have to make sure only admin is allowed to update order
+    OrderResponse updateOrder(Long id, OrderRequest request, Long reqUserId); // i have to make sure only admin is
+                                                                              // allowed to update order
 
-    void deleteOrder(Long id);
+    void deleteOrder(Long id, Long reqUserId);
 }
