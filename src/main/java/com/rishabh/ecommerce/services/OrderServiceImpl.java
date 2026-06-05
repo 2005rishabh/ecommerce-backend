@@ -169,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
 		User user = userRepository.findById(reqUserId)
 				.orElseThrow(() -> new ProductNotFoundException("User not found exception with id: " + reqUserId));
 
-		Order order = orderRepository.findById(reqUserId)
+		Order order = orderRepository.findById(id)
 				.orElseThrow(() -> new ProductNotFoundException("Order not found with id: " + id));
 
 		boolean isAdmin = (user.getRole() == Role.ADMIN);
