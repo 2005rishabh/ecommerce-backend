@@ -65,6 +65,13 @@ public class OrderServiceImpl implements OrderService {
 							() -> new ProductNotFoundException("No product found by id "
 									+ itemRequest.getProductId()));
 
+			int requestedQuantity = itemRequest.getQuantity();
+
+			if (product.getStock() < requestedQuantity) {
+				throw new IllegalStateException("Not enough stock for product: " + product.getProductName());
+			}
+			product.setStock(product.getStock() - requestedQuantity);
+
 			int productPrice = product.getPrice();
 			int quantity = itemRequest.getQuantity();
 			int subtotal = productPrice * quantity;
