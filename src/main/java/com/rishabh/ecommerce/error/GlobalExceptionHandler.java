@@ -18,52 +18,57 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiError> handleProductNotFound(ProductNotFoundException productNotFoundException) {
         ApiError apiError = new ApiError(
-            HttpStatus.NOT_FOUND,
-            productNotFoundException.getMessage(), 
-            LocalDateTime.now(), 
-            Collections.singletonList("The requested resource cannot be found")
-        );
+                HttpStatus.NOT_FOUND,
+                productNotFoundException.getMessage(),
+                LocalDateTime.now(),
+                Collections.singletonList("The requested resource cannot be found"));
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleUserExists(UserAlreadyExistsException userAlreadyExistsException) {
         ApiError apiError = new ApiError(
-            HttpStatus.BAD_REQUEST,
-            userAlreadyExistsException.getMessage(), 
-            LocalDateTime.now(), 
-            Collections.singletonList("User already exists")
-        );
+                HttpStatus.BAD_REQUEST,
+                userAlreadyExistsException.getMessage(),
+                LocalDateTime.now(),
+                Collections.singletonList("User already exists"));
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult()
-        .getFieldErrors()
-        .stream()
-        .map(error ->  error.getField() + ":" + error.getDefaultMessage())
-        .toList();
+                .getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ":" + error.getDefaultMessage())
+                .toList();
 
         ApiError apiError = new ApiError(
-            HttpStatus.BAD_REQUEST,
-            "Validation Failed",
-            LocalDateTime.now(), 
-            errors
-        );
+                HttpStatus.BAD_REQUEST,
+                "Validation Failed",
+                LocalDateTime.now(),
+                errors);
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleProductNotFound(Exception ex) {
         ApiError apiError = new ApiError(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "An unexpected internal server error has occured",
-            LocalDateTime.now(), 
-            Collections.singletonList(ex.getMessage())
-        );
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected internal server error has occured",
+                LocalDateTime.now(),
+                Collections.singletonList(ex.getMessage()));
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<ApiError> ill(UnauthorizedActionException ex) {
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage(),
+                LocalDateTime.now(),
+                Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
 }
