@@ -139,19 +139,46 @@ public class OrderServiceImpl implements OrderService {
 		User user = userRepository.findById(reqUserId)
 				.orElseThrow(() -> new ProductNotFoundException("User not found exception with id: " + reqUserId));
 
-		if (user.getRole() == Role.ADMIN) {
+		if (user.getRole() != Role.ADMIN) {
 			throw new UnauthorizedActionException("You don't have permission to perform these actions");
 		}
 
 		Order order = orderRepository.findById(id)
 				.orElseThrow(() -> new ProductNotFoundException("Order not found with id: " + id));
 
-		OrderResponse orderResponse = mapToOrderResponse(order, order.getOrderItems());
+		if (request.getStatus() != null) {
+			order.setStatus(request.getStatus());
+		}
 
-		return orderResponse;
+		order.setUpdatedAt(LocalDateTime.now());
+
+		Order savedOrderResponse = orderRepository.save(order);
+
+		return mapToOrderResponse(savedOrderResponse, savedOrderResponse.getOrderItems());
 	}
 
 	@Override
 	public void deleteOrder(Long id, Long reqUserId) {
+		User user = userRepository.findById(reqUserId)
+				.orElseThrow(() -> new ProductNotFoundException("User not found exception with id: " + reqUserId));
+
+		Order order = orderRepository.findById(reqUserId)
+				.orElseThrow(() -> new ProductNotFoundException("Order not found with id: " + id));
+
+		boolean isAdmin = (user.getRole() == Role.ADMIN);
+		boolean isOwner = order.getUser().getId().equals(reqUserId);
+
+		if (!isAdmin && !isOwner) {
+			throw new UnauthorizedActionException("You do not have permission to cancel this order.");
+		}
+
+		if (order.getStatus() != Status.PENDING) {
+			throw new IllegalStateException("Order cannot be cancelled. Current status is: " + order.getStatus());
+		}
+
+		order.setStatus(Status.CANCELLED);
+		order.setUpdatedAt(LocalDateTime.now());
+
+		orderRepository.save(order);
 	}
 }

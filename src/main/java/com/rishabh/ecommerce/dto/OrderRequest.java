@@ -3,6 +3,8 @@ package com.rishabh.ecommerce.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.rishabh.ecommerce.entities.Status;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +22,7 @@ import lombok.Setter;
 public class OrderRequest {
     private Long userId;
     private List<OrderItemRequest> items;
+    private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
