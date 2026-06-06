@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rishabh.ecommerce.dto.OrderRequest;
 import com.rishabh.ecommerce.dto.OrderResponse;
-import com.rishabh.ecommerce.dto.ProductResponse;
-import com.rishabh.ecommerce.repositories.OrderRepository;
 import com.rishabh.ecommerce.services.OrderService;
 
 import jakarta.validation.Valid;
@@ -32,7 +30,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         OrderResponse orderResponse = orderService.createOrder(orderRequest);
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);

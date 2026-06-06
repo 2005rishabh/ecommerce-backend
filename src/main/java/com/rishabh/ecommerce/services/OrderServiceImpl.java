@@ -82,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
 					.product(product)
 					.quantity(quantity)
 					.price(productPrice)
+					.subtotal(subtotal)
 					.order(order)
 					.createdAt(LocalDateTime.now())
 					.updatedAt(LocalDateTime.now())
