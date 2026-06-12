@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException.Unauthorized;
-
 import com.rishabh.ecommerce.dto.OrderItemRequest;
 import com.rishabh.ecommerce.dto.OrderItemResponse;
 import com.rishabh.ecommerce.dto.OrderRequest;
