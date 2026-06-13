@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rishabh.ecommerce.dto.AuthResponse;
 import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
+import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.repositories.UserRepository;
 import com.rishabh.ecommerce.services.JwtService;
 import com.rishabh.ecommerce.services.UserService;
 
@@ -25,11 +27,15 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody UserRequest request) {
         UserResponse userResponse = userService.createUser(request);
-        String jwtToken = jwtService.generateToken(userResponse.getUsername());
+        User user = userRepository.findByUsername(userResponse.getUsername())
+                .orElseThrow(() -> new IllegalStateException("User not found after registration"));
+
+        String jwtToken = jwtService.generateToken(user);
         AuthResponse authResponse = AuthResponse.builder()
                 .jwtToken(jwtToken)
                 .username(userResponse.getUsername())
@@ -43,7 +49,10 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        String jwtToken = jwtService.generateToken(request.getUsername());
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalStateException("User not found after login"));
+
+        String jwtToken = jwtService.generateToken(user);
         AuthResponse authResponse = AuthResponse.builder()
                 .jwtToken(jwtToken)
                 .username(request.getUsername())
