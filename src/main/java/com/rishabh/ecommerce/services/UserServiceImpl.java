@@ -3,10 +3,12 @@ package com.rishabh.ecommerce.services;
 import com.rishabh.ecommerce.repositories.UserRepository;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
+import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.User;
 import com.rishabh.ecommerce.error.UserAlreadyExistsException;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest request) {
@@ -30,11 +33,9 @@ public class UserServiceImpl implements UserService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
-                .role(request.getRole())
-                .createdAt(request.getCreatedAt())
-                .updatedAt(request.getUpdatedAt())
+                .role(request.getRole() != null ? request.getRole() : Role.USER)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -62,10 +63,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPassword(request.getPassword());
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole());
-        user.setUpdatedAt(request.getUpdatedAt());
+        user.setRole(request.getRole() != null ? request.getRole() : user.getRole());
 
         User savedUser = userRepository.save(user);
 
