@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.util.AuthorityUtil;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -32,7 +33,7 @@ public class JwtService {
     // key will be used here for generating token(main use of compact())
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", "ROLE_" + user.getRole().name());
+        claims.put("role", AuthorityUtil.toAuthority(user.getRole()));
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getUsername())

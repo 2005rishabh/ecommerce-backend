@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.rishabh.ecommerce.entities.User;
 import com.rishabh.ecommerce.repositories.UserRepository;
+import com.rishabh.ecommerce.util.AuthorityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public class CustomerUserDetailService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(), user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
+                List.of(new SimpleGrantedAuthority(AuthorityUtil.toAuthority(user.getRole()))));
     }
 
 }

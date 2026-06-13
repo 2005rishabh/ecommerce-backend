@@ -1,5 +1,7 @@
 package com.rishabh.ecommerce.filter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -39,19 +42,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt = authHeader.substring(7);
         try {
             final String username = jwtService.extractUsername(jwt);
+            log.debug("JWT authentication: extracted username='{}'", username);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                boolean valid = jwtService.isTokenValid(jwt, userDetails);
+                log.debug("JWT token valid for user '{}': {}", username, valid);
+
+                if (valid) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
 
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.debug("Set SecurityContext authentication for '{}' with authorities={}", username,
+                            userDetails.getAuthorities());
+                } else {
+                    log.debug("Token validation failed for user '{}'", username);
                 }
             }
         } catch (JwtException ex) {
+            log.debug("Invalid JWT: {}", ex.getMessage());
             // Ignore invalid or malformed JWTs so permitAll endpoints still work.
         }
 
