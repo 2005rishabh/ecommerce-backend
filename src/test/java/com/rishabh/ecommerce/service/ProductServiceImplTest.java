@@ -1,13 +1,13 @@
 package com.rishabh.ecommerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +58,26 @@ public class ProductServiceImplTest {
         assertEquals(13, productResponse.getStock());
 
         verify(productRepository, times(1)).save(any(Product.class));
+
+    }
+
+    @Test
+    public void getProductById_ShouldReturnTheProductTheResoponse_WhenProductExists() {
+        Long productId = 1L;
+        Product mockProduct = new Product();
+        mockProduct.setId(productId);
+        mockProduct.setProductName("mouse");
+        mockProduct.setPrice(1500);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
+
+        ProductResponse result = productServiceImpl.getProductById(productId);
+
+        assertNotNull(result);
+        assertEquals(productId, result.getId());
+        assertEquals("mouse", result.getProductName());
+
+        verify(productRepository, times(1)).findById(productId);
 
     }
 }

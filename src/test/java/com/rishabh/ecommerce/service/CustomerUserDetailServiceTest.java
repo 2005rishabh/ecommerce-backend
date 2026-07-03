@@ -25,10 +25,10 @@ import com.rishabh.ecommerce.services.CustomerUserDetailService;
 public class CustomerUserDetailServiceTest {
     // will create a fake repo
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
-    CustomerUserDetailService customerUserDetailService;
+    private CustomerUserDetailService customerUserDetailService;
 
     @Test
     void loadUserByUsername_ShouldLoadUserDetails_WhenUserExists() {
