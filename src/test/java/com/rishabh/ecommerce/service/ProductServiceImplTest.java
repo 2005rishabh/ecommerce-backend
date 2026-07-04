@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,7 +85,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void getProductById_ShouldThrowException_WhenProductDoesNotExist() {
+    void getProductById_ShouldThrowException_WhenProductDoesNotExists() {
         Long invalidId = 22L;
 
         when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
@@ -102,7 +101,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void updateProduct_ShouldUpdateAndReturnProductResponse_WhenProductExist() {
+    void updateProduct_ShouldUpdateAndReturnProductResponse_WhenProductExists() {
         Long productId = 1L;
         ProductRequest updateReq = new ProductRequest();
         updateReq.setProductName("Upgarded Laptop");
@@ -133,7 +132,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void updateProduct_ShouldThrowException_WhenProductNotExist() {
+    void updateProduct_ShouldThrowException_WhenProductNotExists() {
         Long invalidId = 99L;
         ProductRequest updateReq = new ProductRequest();
         updateReq.setProductName("Fake Laptop");
@@ -149,5 +148,40 @@ public class ProductServiceImplTest {
         verify(productRepository, never()).save(any(Product.class));
 
     }
+
+    @Test
+    void deleteProduct_ShouldDeleteProduct_WhenProductExists() {
+        Long productId = 1L;
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+
+
+
+        productServiceImpl.deleteProduct(productId);
+
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, times(1)).delete(existingProduct);
+
+    }
+
+    @Test
+    void deleteProduct_ShouldThrowException_WhenProductNotExists() {
+        Long invalidId = 99L;
+    
+        when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, () -> {
+            productServiceImpl.deleteProduct(invalidId);
+        });
+
+
+        verify(productRepository, times(1)).findById(invalidId);
+        verify(productRepository, never()).delete(any(Product.class));
+
+    }
+
+
 
 }
