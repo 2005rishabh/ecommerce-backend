@@ -2,7 +2,10 @@ package com.rishabh.ecommerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
+import com.rishabh.ecommerce.error.ProductNotFoundException;
 import com.rishabh.ecommerce.repositories.ProductRepository;
 import com.rishabh.ecommerce.services.ProductServiceImpl;
 
@@ -80,4 +84,70 @@ public class ProductServiceImplTest {
         verify(productRepository, times(1)).findById(productId);
 
     }
+
+    @Test
+    void getProductById_ShouldThrowException_WhenProductDoesNotExist() {
+        Long invalidId = 22L;
+
+        when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+        ProductNotFoundException exception = assertThrows(ProductNotFoundException.class,
+                () -> {
+                    productServiceImpl.getProductById(invalidId);
+                });
+
+        assertEquals("cannot find product by id " + invalidId, exception.getMessage());
+
+        verify(productRepository, times(1)).findById(invalidId);
+    }
+
+    @Test
+    void updateProduct_ShouldUpdateAndReturnProductResponse_WhenProductExist() {
+        Long productId = 1L;
+        ProductRequest updateReq = new ProductRequest();
+        updateReq.setProductName("Upgarded Laptop");
+        updateReq.setPrice(342343);
+
+        Product existProduct = new Product();
+        existProduct.setId(productId);
+        existProduct.setProductName("Old Laptop");
+        existProduct.setPrice(1232);
+
+        Product savedProduct = new Product();
+        savedProduct.setId(productId);
+        savedProduct.setProductName("Upgraded Laptop");
+        savedProduct.setPrice(342343);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+
+        ProductResponse result = productServiceImpl.updateProductDetails(productId, updateReq);
+
+        assertNotNull(result);
+        assertEquals("Upgraded Laptop", result.getProductName());
+        assertEquals(342343, result.getPrice());
+
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, times(1)).save(any(Product.class));
+
+    }
+
+    @Test
+    void updateProduct_ShouldThrowException_WhenProductNotExist() {
+        Long invalidId = 99L;
+        ProductRequest updateReq = new ProductRequest();
+        updateReq.setProductName("Fake Laptop");
+
+        when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+
+        assertThrows(ProductNotFoundException.class, () -> {
+            productServiceImpl.updateProductDetails(invalidId, updateReq);
+        });
+
+        verify(productRepository, times(1)).findById(invalidId);
+        verify(productRepository, never()).save(any(Product.class));
+
+    }
+
 }
