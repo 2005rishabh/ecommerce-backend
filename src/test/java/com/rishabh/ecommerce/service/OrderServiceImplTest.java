@@ -2,7 +2,9 @@ package com.rishabh.ecommerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,5 +86,38 @@ public class OrderServiceImplTest {
         verify(productRepository, times(1)).findById(productId);
         verify(orderRepository, times(1)).save(any(Order.class));
     }
+
+    @Test
+    void createOrder_ShouldThrowException_WhenInsufficientStock() {
+        Long userId = 1L;
+        Long productId = 100L;
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+
+        Product mockProduct = new Product();
+        mockProduct.setId(productId);
+        mockProduct.setStock(2);
+
+        OrderItemRequest itemRequest = new OrderItemRequest();
+        itemRequest.setProductId(productId);
+        itemRequest.setQuantity(5);
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setUserId(userId);
+        orderRequest.setItems(List.of(itemRequest));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
+
+        assertThrows(RuntimeException.class, () -> {
+            orderServiceImpl.createOrder(orderRequest);
+        });
+
+        verify(orderRepository, never()).save(any(Order.class));
+
+    }
+
+    
 
 }
