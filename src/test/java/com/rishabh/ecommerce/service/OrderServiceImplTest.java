@@ -17,13 +17,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.UncategorizedDataAccessException;
 
 import com.rishabh.ecommerce.dto.OrderItemRequest;
 import com.rishabh.ecommerce.dto.OrderRequest;
 import com.rishabh.ecommerce.dto.OrderResponse;
 import com.rishabh.ecommerce.entities.Order;
 import com.rishabh.ecommerce.entities.Product;
+import com.rishabh.ecommerce.entities.Role;
+import com.rishabh.ecommerce.entities.Status;
 import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.error.UnauthorizedActionException;
 import com.rishabh.ecommerce.repositories.OrderItemRepository;
 import com.rishabh.ecommerce.repositories.OrderRepository;
 import com.rishabh.ecommerce.repositories.ProductRepository;
@@ -125,11 +129,11 @@ public class OrderServiceImplTest {
 
         User owner = new User();
         owner.setId(ownerId);
-        
+
         Order existOrder = new Order();
         existOrder.setId(orderId);
         existOrder.setUser(owner);
-        existOrder.setStatus(com.rishabh.ecommerce.entities.Status.PENDING); 
+        existOrder.setStatus(com.rishabh.ecommerce.entities.Status.PENDING);
 
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existOrder));
@@ -140,8 +144,41 @@ public class OrderServiceImplTest {
 
         verify(userRepository, times(1)).findById(ownerId);
         verify(orderRepository, times(1)).findById(orderId);
-        
+
         verify(orderRepository, times(1)).save(existOrder);
+    }
+
+    @Test
+    void deleteOrder_ShouldThrowException_WhenUserIsNotOwner() {
+        Long orderId = 500L;
+        Long actualId = 1L;
+        Long hackerId = 10L;
+
+        User mockUser = new User();
+        mockUser.setId(actualId);
+
+        User hacker = new User();
+        hacker.setId(hackerId);
+        hacker.setRole(Role.USER);
+
+        Order mockOrder = new Order();
+        mockOrder.setId(orderId);
+        mockOrder.setUser(mockUser);
+        mockOrder.setStatus(Status.PENDING);
+
+        when(userRepository.findById(hackerId)).thenReturn(Optional.of(hacker));
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(mockOrder));
+
+        assertThrows(UnauthorizedActionException.class, () -> {
+            orderServiceImpl.deleteOrder(orderId, hackerId);
+        });
+
+        verify(userRepository, times(1)).findById(hackerId);
+        verify(orderRepository, times(1)).findById(orderId);
+
+        verify(orderRepository, never()).save(any(Order.class));
+
     }
 
 }
