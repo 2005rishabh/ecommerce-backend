@@ -2,7 +2,10 @@ package com.rishabh.ecommerce.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +21,7 @@ import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
 import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.error.ProductNotFoundException;
 import com.rishabh.ecommerce.repositories.UserRepository;
 import com.rishabh.ecommerce.services.UserServiceImpl;
 
@@ -63,6 +67,20 @@ public class UserServiceImplTest {
         verify(userRepository, times(1)).save(any(User.class));
     }
 
+    @Test
+    void createUser_ShouldThrowException_WhenUsernameExists() {
+        UserRequest request = new UserRequest();
+        request.setUsername("alreadyAUser");
 
+        when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
+
+        assertThrows(ProductNotFoundException.class, () -> {
+            userServiceImpl.createUser(request);
+        });
+
+        verify(userRepository, never()).existsByEmail(anyString());
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(userRepository, never()).save(any(User.class));
+    }
 
 }
