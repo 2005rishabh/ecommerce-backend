@@ -21,7 +21,7 @@ import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
 import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.User;
-import com.rishabh.ecommerce.error.ProductNotFoundException;
+import com.rishabh.ecommerce.error.UserAlreadyExistsException;
 import com.rishabh.ecommerce.repositories.UserRepository;
 import com.rishabh.ecommerce.services.UserServiceImpl;
 
@@ -74,7 +74,7 @@ public class UserServiceImplTest {
 
         when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
 
-        assertThrows(ProductNotFoundException.class, () -> {
+        assertThrows(UserAlreadyExistsException.class, () -> {
             userServiceImpl.createUser(request);
         });
 
@@ -83,4 +83,22 @@ public class UserServiceImplTest {
         verify(userRepository, never()).save(any(User.class));
     }
 
+    @Test
+    void createUser_ShouldThrowException_WhenEmailExists() {
+        
+        UserRequest request = new UserRequest();
+        request.setUsername("validUser");
+        request.setEmail("taken@gmail.com");
+
+        when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+
+        assertThrows(UserAlreadyExistsException.class, () -> {
+            userServiceImpl.createUser(request);
+        });
+
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    
 }
