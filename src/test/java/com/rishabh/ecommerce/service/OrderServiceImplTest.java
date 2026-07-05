@@ -119,6 +119,29 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void 
+    void deleteOrder_ShouldCancelOrder_WhenUserIsOwner() {
+        Long orderId = 500L;
+        Long ownerId = 1L;
+
+        User owner = new User();
+        owner.setId(ownerId);
+        
+        Order existOrder = new Order();
+        existOrder.setId(orderId);
+        existOrder.setUser(owner);
+        existOrder.setStatus(com.rishabh.ecommerce.entities.Status.PENDING); 
+
+        when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existOrder));
+
+        orderServiceImpl.deleteOrder(orderId, ownerId);
+
+        assertEquals(com.rishabh.ecommerce.entities.Status.CANCELLED, existOrder.getStatus());
+
+        verify(userRepository, times(1)).findById(ownerId);
+        verify(orderRepository, times(1)).findById(orderId);
+        
+        verify(orderRepository, times(1)).save(existOrder);
+    }
 
 }
