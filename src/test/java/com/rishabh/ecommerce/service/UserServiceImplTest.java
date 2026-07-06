@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -100,5 +102,18 @@ public class UserServiceImplTest {
         verify(userRepository, never()).save(any(User.class));
     }
 
+    @Test
+    void getUserById_ShouldReturnUser_WhenExists() {
+        Long userId = 1L;
+        User mockUser = User.builder().id(userId).username("testuser").build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+
+        UserResponse result = userServiceImpl.getUserById(userId);
+
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+        verify(userRepository, times(1)).findById(userId);
+    }
     
 }
