@@ -125,4 +125,53 @@ public class UserServiceImplTest {
             userServiceImpl.getUserById(invalidId);
         });
     }
+
+    @Test
+    void updateUser_ShouldUpdateAndEncodeNewPassword_WhenUserExists() {
+        Long userId = 1L;
+        
+        UserRequest updateRequest = new UserRequest();
+        updateRequest.setEmail("updated@gmail.com");
+        updateRequest.setPassword("newPlainTextPassword");
+        updateRequest.setRole(Role.ADMIN);
+
+        User existingUser = User.builder()
+                .id(userId)
+                .email("old@gmail.com")
+                .password("oldHashedPassword")
+                .role(Role.USER)
+                .build();
+
+        User savedUser = User.builder()
+                .id(userId)
+                .email("updated@gmail.com")
+                .password("newHashedPassword123")
+                .role(Role.ADMIN)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.encode("newPlainTextPassword")).thenReturn("newHashedPassword123");
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        UserResponse result = userServiceImpl.updateUser(userId, updateRequest);
+
+        assertEquals("updated@gmail.com", result.getEmail());
+        assertEquals(Role.ADMIN, result.getRole());
+        
+        verify(passwordEncoder, times(1)).encode("newPlainTextPassword");
+        verify(userRepository, times(1)).save(existingUser);
+    }
+
+    @Test
+    void deleteUser_ShouldDelete_WhenUserExists() {
+        Long userId = 1L;
+        User existingUser = User.builder().id(userId).build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+
+        userServiceImpl.deleteUser(userId);
+
+        verify(userRepository, times(1)).delete(existingUser);
+    }
 }
+
