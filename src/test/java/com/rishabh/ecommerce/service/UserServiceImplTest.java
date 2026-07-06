@@ -87,7 +87,7 @@ public class UserServiceImplTest {
 
     @Test
     void createUser_ShouldThrowException_WhenEmailExists() {
-        
+
         UserRequest request = new UserRequest();
         request.setUsername("validUser");
         request.setEmail("taken@gmail.com");
@@ -115,5 +115,14 @@ public class UserServiceImplTest {
         assertEquals("testuser", result.getUsername());
         verify(userRepository, times(1)).findById(userId);
     }
-    
+
+    @Test
+    void getUserById_ShouldThrowException_WhenUserDoesNotExist() {
+        Long invalidId = 99L;
+        when(userRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            userServiceImpl.getUserById(invalidId);
+        });
+    }
 }
