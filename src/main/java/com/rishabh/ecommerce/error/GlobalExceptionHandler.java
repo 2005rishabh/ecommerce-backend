@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiError> handleProductNotFound(ProductNotFoundException productNotFoundException) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleProductNotFound(ResourceNotFoundException resourceNotFoundException) {
         ApiError apiError = new ApiError(
                 HttpStatus.NOT_FOUND,
-                productNotFoundException.getMessage(),
+                resourceNotFoundException.getMessage(),
                 LocalDateTime.now(),
                 Collections.singletonList("The requested resource cannot be found"));
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);

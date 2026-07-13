@@ -16,7 +16,7 @@ import com.rishabh.ecommerce.entities.Product;
 import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.Status;
 import com.rishabh.ecommerce.entities.User;
-import com.rishabh.ecommerce.error.ProductNotFoundException;
+import com.rishabh.ecommerce.error.ResourceNotFoundException;
 import com.rishabh.ecommerce.error.UnauthorizedActionException;
 import com.rishabh.ecommerce.repositories.OrderItemRepository;
 import com.rishabh.ecommerce.repositories.OrderRepository;
@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// check kro ki aisa koi user hai ki nahi validate kro
 		User user = userRepository.findById(orderRequest.getUserId())
-				.orElseThrow(() -> new ProductNotFoundException(
+				.orElseThrow(() -> new ResourceNotFoundException(
 						"User not found id " + orderRequest.getUserId()));
 
 		// order entity ser karo
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 		for (OrderItemRequest itemRequest : orderRequest.getItems()) {
 			Product product = productRepository.findById(itemRequest.getProductId())
 					.orElseThrow(
-							() -> new ProductNotFoundException("No product found by id "
+							() -> new ResourceNotFoundException("No product found by id "
 									+ itemRequest.getProductId()));
 
 			int requestedQuantity = itemRequest.getQuantity();
@@ -135,7 +135,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderResponse getOrderById(Long id) {
 		Order order = orderRepository.findById(id)
-				.orElseThrow(() -> new ProductNotFoundException("Order not found with id : " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Order not found with id : " + id));
 		OrderResponse orderResponse = mapToOrderResponse(order, order.getOrderItems());
 		return orderResponse;
 	}
@@ -143,14 +143,14 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderResponse updateOrder(Long id, OrderRequest request, Long reqUserId) {
 		User user = userRepository.findById(reqUserId)
-				.orElseThrow(() -> new ProductNotFoundException("User not found exception with id: " + reqUserId));
+				.orElseThrow(() -> new ResourceNotFoundException("User not found exception with id: " + reqUserId));
 
 		if (user.getRole() != Role.ADMIN) {
 			throw new UnauthorizedActionException("You don't have permission to perform these actions");
 		}
 
 		Order order = orderRepository.findById(id)
-				.orElseThrow(() -> new ProductNotFoundException("Order not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
 		if (request.getStatus() != null) {
 			order.setStatus(request.getStatus());
@@ -166,10 +166,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void deleteOrder(Long id, Long reqUserId) {
 		User user = userRepository.findById(reqUserId)
-				.orElseThrow(() -> new ProductNotFoundException("User not found exception with id: " + reqUserId));
+				.orElseThrow(() -> new ResourceNotFoundException("User not found exception with id: " + reqUserId));
 
 		Order order = orderRepository.findById(id)
-				.orElseThrow(() -> new ProductNotFoundException("Order not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
 		boolean isAdmin = (user.getRole() == Role.ADMIN);
 		boolean isOwner = order.getUser().getId().equals(reqUserId);

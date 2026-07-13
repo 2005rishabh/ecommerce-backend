@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
-import com.rishabh.ecommerce.error.ProductNotFoundException;
+import com.rishabh.ecommerce.error.ResourceNotFoundException;
 import com.rishabh.ecommerce.repositories.ProductRepository;
 import com.rishabh.ecommerce.services.ProductServiceImpl;
 
@@ -90,7 +90,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-        ProductNotFoundException exception = assertThrows(ProductNotFoundException.class,
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> {
                     productServiceImpl.getProductById(invalidId);
                 });
@@ -139,8 +139,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-
-        assertThrows(ProductNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             productServiceImpl.updateProductDetails(invalidId, updateReq);
         });
 
@@ -157,8 +156,6 @@ public class ProductServiceImplTest {
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
-
-
         productServiceImpl.deleteProduct(productId);
 
         verify(productRepository, times(1)).findById(productId);
@@ -169,19 +166,16 @@ public class ProductServiceImplTest {
     @Test
     void deleteProduct_ShouldThrowException_WhenProductNotExists() {
         Long invalidId = 99L;
-    
+
         when(productRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             productServiceImpl.deleteProduct(invalidId);
         });
-
 
         verify(productRepository, times(1)).findById(invalidId);
         verify(productRepository, never()).delete(any(Product.class));
 
     }
-
-
 
 }
