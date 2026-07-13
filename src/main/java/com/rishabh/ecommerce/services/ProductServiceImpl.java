@@ -2,8 +2,13 @@ package com.rishabh.ecommerce.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.rishabh.ecommerce.dto.PageResponse;
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
@@ -45,10 +50,15 @@ public class ProductServiceImpl implements ProductService {
         }
 
         @Override
-        public List<ProductResponse> getAllProducts() {
-                List<Product> products = productRepository.findAll();
+        public PageResponse<ProductResponse> getAllProducts(int pageNumber, int pageSize, String sortBy,
+                        String sortDir) {
 
-                return products.stream()
+                Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                                : Sort.by(sortBy).descending();
+
+                Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+                Page<Product> productPage = productRepository.findAll(pageable);
+                List<ProductResponse> productResponses = productPage.getContent().stream()
                                 .map(product -> ProductResponse.builder()
                                                 .id(product.getId())
                                                 .productName(product.getProductName())
@@ -60,6 +70,14 @@ public class ProductServiceImpl implements ProductService {
                                                 .updatedAt(product.getUpdatedAt())
                                                 .build())
                                 .toList();
+                return PageResponse.<ProductResponse>builder()
+                                .content(productResponses)
+                                .pageNumber(productPage.getNumber())
+                                .pageSize(productPage.getSize())
+                                .totalElements(productPage.getTotalElements())
+                                .totalPages(productPage.getTotalPages())
+                                .isLastPage(productPage.isLast())
+                                .build();
         }
 
         @Override
@@ -107,8 +125,7 @@ public class ProductServiceImpl implements ProductService {
         @Override
         public void deleteProduct(Long id) {
                 Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("There is no product with id " + id));
-                productRepository.delete(existingProduct);;
-
+                                .orElseThrow(() -> new ResourceNotFoundException("There is no product with id " + id));
+                productRepository.delete(existingProduct);
         }
 }

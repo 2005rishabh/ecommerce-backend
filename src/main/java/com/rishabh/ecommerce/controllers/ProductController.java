@@ -3,8 +3,10 @@ package com.rishabh.ecommerce.controllers;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rishabh.ecommerce.dto.PageResponse;
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
@@ -36,8 +38,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> listRepo = productService.getAllProducts();
+    public ResponseEntity<PageResponse<ProductResponse>> getAllProducts(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
+        PageResponse<ProductResponse> listRepo = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDir);
         return ResponseEntity.ok(listRepo);
     }
 
@@ -48,7 +54,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProductDetails(@PathVariable Long id, @RequestBody ProductRequest productDetails) {
+    public ResponseEntity<ProductResponse> updateProductDetails(@PathVariable Long id,
+            @RequestBody ProductRequest productDetails) {
         ProductResponse response = productService.updateProductDetails(id, productDetails);
         return ResponseEntity.ok(response);
     }
