@@ -11,7 +11,8 @@ public interface ProductService {
     ProductResponse createProduct(ProductRequest request);
 
     PageResponse<ProductResponse> getAllProducts(
-            int pageNumber, int pageSize, String sortBy, String sortDir);
+            int pageNumber, int pageSize, String sortBy, String sortDir,
+            String category, Double minPrice, Double maxPrice, String keyword);
 
     ProductResponse getProductById(Long id);
 

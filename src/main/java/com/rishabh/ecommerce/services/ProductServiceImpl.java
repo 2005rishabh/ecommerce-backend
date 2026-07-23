@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.rishabh.ecommerce.dto.PageResponse;
@@ -14,6 +15,7 @@ import com.rishabh.ecommerce.dto.ProductResponse;
 import com.rishabh.ecommerce.entities.Product;
 import com.rishabh.ecommerce.error.ResourceNotFoundException;
 import com.rishabh.ecommerce.repositories.ProductRepository;
+import com.rishabh.ecommerce.repositories.specifications.ProductSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,13 +53,16 @@ public class ProductServiceImpl implements ProductService {
 
         @Override
         public PageResponse<ProductResponse> getAllProducts(int pageNumber, int pageSize, String sortBy,
-                        String sortDir) {
+                        String sortDir, String category, Double minPrice, Double maxPrice,
+                        String keyword) {
 
                 Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
                                 : Sort.by(sortBy).descending();
 
                 Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-                Page<Product> productPage = productRepository.findAll(pageable);
+                Specification<Product> spec = ProductSpecifications.buildSpecification(
+                                category, minPrice, maxPrice, keyword);
+                Page<Product> productPage = productRepository.findAll(spec, pageable);
                 List<ProductResponse> productResponses = productPage.getContent().stream()
                                 .map(product -> ProductResponse.builder()
                                                 .id(product.getId())
