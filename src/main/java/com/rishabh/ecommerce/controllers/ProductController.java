@@ -43,10 +43,10 @@ public class ProductController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String category,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) Double minPrice,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) Double maxPrice,
-            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String keyword) {
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "keyword", required = false) String keyword) {
         PageResponse<ProductResponse> listRepo = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDir,
                 category, minPrice, maxPrice, keyword);
         return ResponseEntity.ok(listRepo);
