@@ -1,7 +1,5 @@
 package com.rishabh.ecommerce.controllers;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rishabh.ecommerce.dto.PageResponse;
 import com.rishabh.ecommerce.dto.ProductRequest;
 import com.rishabh.ecommerce.dto.ProductResponse;
-import com.rishabh.ecommerce.entities.Product;
 import com.rishabh.ecommerce.services.ProductService;
 
 import jakarta.validation.Valid;

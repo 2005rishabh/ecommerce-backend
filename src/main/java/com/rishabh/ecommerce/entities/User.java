@@ -2,7 +2,6 @@ package com.rishabh.ecommerce.entities;
 
 import java.time.LocalDateTime;
 
-import com.rishabh.ecommerce.entities.Role;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

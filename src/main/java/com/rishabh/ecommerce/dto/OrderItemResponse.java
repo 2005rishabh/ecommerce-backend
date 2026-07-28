@@ -1,7 +1,5 @@
 package com.rishabh.ecommerce.dto;
 
-import org.hibernate.id.IntegralDataTypeHolder;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
