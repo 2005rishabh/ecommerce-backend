@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> gellAllUsers() {
-        List<UserResponse> listRepo = userService.gellAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> listRepo = userService.getAllUsers();
         return ResponseEntity.ok(listRepo);
     }
 

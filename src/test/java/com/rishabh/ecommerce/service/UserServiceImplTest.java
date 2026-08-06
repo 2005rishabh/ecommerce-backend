@@ -23,6 +23,7 @@ import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
 import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.error.ResourceNotFoundException;
 import com.rishabh.ecommerce.error.UserAlreadyExistsException;
 import com.rishabh.ecommerce.repositories.UserRepository;
 import com.rishabh.ecommerce.services.UserServiceImpl;
@@ -121,7 +122,7 @@ public class UserServiceImplTest {
         Long invalidId = 99L;
         when(userRepository.findById(invalidId)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             userServiceImpl.getUserById(invalidId);
         });
     }

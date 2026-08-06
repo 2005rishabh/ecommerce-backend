@@ -25,7 +25,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,7 +33,6 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "orders")
 @Getter
-@Data
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,7 +54,7 @@ public class Order {
     private Status status;
 
     @ManyToOne
-    @NotNull(message = "must mention what is the role of person")
+    @NotNull(message = "User cannot be null")
     @JoinColumn(name = "user_id")
     private User user;
 

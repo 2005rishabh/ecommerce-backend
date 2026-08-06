@@ -10,6 +10,7 @@ import com.rishabh.ecommerce.dto.UserRequest;
 import com.rishabh.ecommerce.dto.UserResponse;
 import com.rishabh.ecommerce.entities.Role;
 import com.rishabh.ecommerce.entities.User;
+import com.rishabh.ecommerce.error.ResourceNotFoundException;
 import com.rishabh.ecommerce.error.UserAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> gellAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return mapToResponse(user);
 
     }
@@ -61,13 +62,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        if (request.getPassword() != null) {
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        user.setEmail(request.getEmail());
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty() && !request.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new UserAlreadyExistsException("Email is already taken");
+            }
+            user.setEmail(request.getEmail());
+        }
+
         user.setRole(request.getRole() != null ? request.getRole() : user.getRole());
 
         User savedUser = userRepository.save(user);
@@ -79,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         userRepository.delete(user);
 

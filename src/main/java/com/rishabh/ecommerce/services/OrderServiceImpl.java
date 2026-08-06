@@ -90,6 +90,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		order.setTotalAmount(totalOrderAmount);
+		order.setOrderItems(orderItems);
 		Order saveOrder = orderRepository.save(order);
 
 		orderItemRepository.saveAll(orderItems);
@@ -141,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public OrderResponse updateOrder(Long id, OrderRequest request, Long reqUserId) {
 		User user = userRepository.findById(reqUserId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found exception with id: " + reqUserId));
@@ -164,6 +166,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteOrder(Long id, Long reqUserId) {
 		User user = userRepository.findById(reqUserId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found exception with id: " + reqUserId));
@@ -184,6 +187,14 @@ public class OrderServiceImpl implements OrderService {
 
 		order.setStatus(Status.CANCELLED);
 		order.setUpdatedAt(LocalDateTime.now());
+
+		for (OrderItem item : order.getOrderItems()) {
+			Product product = item.getProduct();
+			if (product != null) {
+				product.setStock(product.getStock() + item.getQuantity());
+				productRepository.save(product);
+			}
+		}
 
 		orderRepository.save(order);
 	}

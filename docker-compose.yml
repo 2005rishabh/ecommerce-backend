@@ -7,6 +7,8 @@ services:
     environment:
       MYSQL_DATABASE: ecommerce_db
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: ecommerce
+      MYSQL_PASSWORD: password123
     ports:
       - "3307:3306"
     volumes:

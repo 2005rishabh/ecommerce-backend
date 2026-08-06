@@ -8,7 +8,7 @@ import com.rishabh.ecommerce.dto.UserResponse;
 public interface UserService {
     UserResponse createUser(UserRequest request);
 
-    List<UserResponse> gellAllUsers();
+    List<UserResponse> getAllUsers();
 
     UserResponse getUserById(Long id);
 
