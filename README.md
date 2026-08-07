@@ -56,14 +56,15 @@ The diagram below maps how requests move through Spring Security filters, Contro
 graph TD
     Client[Client / Postman / Swagger UI]
 
-    subgraph Security Layer
+    subgraph Security ["Security Layer"]
         SF[SecurityFilterChain]
         JWTF[JwtAuthenticationFilter]
         UserDetailSvc[CustomerUserDetailService]
         JWTService[JwtService]
+        SecurityContextHolder[SecurityContextHolder]
     end
 
-    subgraph Presentation Layer - Controllers
+    subgraph Controllers ["Presentation Layer - Controllers"]
         AC[AuthController]
         UC[UserController]
         PC[ProductController]
@@ -71,17 +72,17 @@ graph TD
         GEH[GlobalExceptionHandler]
     end
 
-    subgraph Data Transfer Layer
-        DTOs[DTOs: AuthResponse, OrderRequest, ProductRequest, UserRequest, etc.]
+    subgraph DTO ["Data Transfer Layer"]
+        DTOs["DTOs: AuthResponse, OrderRequest, ProductRequest, UserRequest, etc."]
     end
 
-    subgraph Service Layer - Business Logic
-        US[UserService / UserServiceImpl]
-        PS[ProductService / ProductServiceImpl]
-        OS[OrderService / OrderServiceImpl]
+    subgraph Services ["Service Layer - Business Logic"]
+        US["UserService / UserServiceImpl"]
+        PS["ProductService / ProductServiceImpl"]
+        OS["OrderService / OrderServiceImpl"]
     end
 
-    subgraph Persistence Layer - Repositories
+    subgraph Persistence ["Persistence Layer - Repositories"]
         UR[UserRepository]
         PR[ProductRepository]
         OR[OrderRepository]
@@ -89,7 +90,7 @@ graph TD
         PFS[ProductSpecifications]
     end
 
-    subgraph Database Entities
+    subgraph Entities ["Database Entities"]
         E_User[(User)]
         E_Product[(Product)]
         E_Order[(Order)]
@@ -100,9 +101,9 @@ graph TD
     SF --> JWTF
     JWTF -->|1. Validate Token| JWTService
     JWTF -->|2. Load User| UserDetailSvc
-    JWTF -->|3. Set SecurityContext| SecurityContextHolder[SecurityContextHolder]
+    JWTF -->|3. Set SecurityContext| SecurityContextHolder
     
-    SecurityContextHolder -->|Authorized Request| Presentation Layer - Controllers
+    SecurityContextHolder -->|Authorized Request| Controllers
 
     AC -->|Auth Requests| US
     AC -->|Generate JWT| JWTService
@@ -110,8 +111,8 @@ graph TD
     PC -->|Manage Products & Filtering| PS
     OC -->|Place / View Orders| OS
     
-    AC & UC & PC & OC -. Uses .-> DTOs
-    AC & UC & PC & OC -. Exception Thrown .-> GEH
+    AC & UC & PC & OC -.->|Uses| DTOs
+    AC & UC & PC & OC -.->|Exception Thrown| GEH
 
     US --> UR
     PS --> PR
