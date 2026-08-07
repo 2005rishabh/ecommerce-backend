@@ -1,4 +1,4 @@
-# 🛒 E-Commerce Backend REST API
+# E-Commerce Backend REST API
 
 A robust, enterprise-ready **E-Commerce Backend RESTful Service** built with **Java 21**, **Spring Boot 3.5**, **Spring Security (JWT)**, **Spring Data JPA**, **MySQL 8.0**, and **OpenAPI/Swagger 3.1**.
 
@@ -6,7 +6,13 @@ This repository delivers stateless JWT-based security, flexible product catalog 
 
 ---
 
-## 📋 Table of Contents
+### Quick Links
+* **Live AWS EC2 Demo (Swagger UI):** [http://13.201.188.191:8080/swagger-ui/index.html](http://13.201.188.191:8080/swagger-ui/index.html)
+* **Docker Hub Repository:** [https://hub.docker.com/r/20rishabh05/ecommerce_backend](https://hub.docker.com/r/20rishabh05/ecommerce_backend)
+
+---
+
+## Table of Contents
 - [Architecture & Infrastructure](#-architecture--infrastructure)
 - [System Linkage Diagram](#-system-linkage-diagram)
 - [Database Schema Design (ERD)](#-database-schema-design-erd)
@@ -21,7 +27,7 @@ This repository delivers stateless JWT-based security, flexible product catalog 
 
 ---
 
-## 🏗️ Architecture & Infrastructure
+## Architecture & Infrastructure
 
 The application runs in a containerized environment powered by **Docker Compose**, orchestrating a **Spring Boot Backend Application** and a **MySQL 8.0 Database** service.
 
@@ -48,7 +54,7 @@ graph TD
 
 ---
 
-## 🔗 System Linkage Diagram
+## System Linkage Diagram
 
 The diagram below maps how requests move through Spring Security filters, Controllers, Services, Repositories, and Data Models.
 
@@ -129,7 +135,7 @@ graph TD
 
 ---
 
-## 🗄️ Database Schema Design (ERD)
+## Database Schema Design (ERD)
 
 Relational database model designed with strict integrity constraints, foreign key mappings, and auditing metadata (`created_at`, `updated_at`).
 
@@ -184,7 +190,7 @@ erDiagram
 
 ---
 
-## 🔐 JWT Authentication Flow
+## JWT Authentication Flow
 
 `JwtAuthenticationFilter` extends `OncePerRequestFilter` to intercept HTTP calls, validate Bearer tokens, and establish security context.
 
@@ -233,7 +239,7 @@ sequenceDiagram
 
 ---
 
-## ⭐ Core Features
+## Core Features
 
 ### 1. Authentication & Security
 - **Stateless Authentication:** Register (`/api/auth/register`) and Login (`/api/auth/login`) with BCrypt password hashing.
@@ -255,7 +261,7 @@ sequenceDiagram
 
 ---
 
-## 🛠️ Tech Stack & Dependency Matrix
+## Tech Stack & Dependency Matrix
 
 | Layer / Concern | Technology / Library | Version | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -292,7 +298,7 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-## 🚀 Local Setup & Running
+## Local Setup & Running
 
 ### Prerequisites
 - **JDK 21** installed and configured in `JAVA_HOME`.
@@ -322,7 +328,7 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-## 🐳 Docker & Docker Compose Setup
+## Docker & Docker Compose Setup
 
 Run the entire application stack (Spring Boot + MySQL) using Docker in a single command.
 
@@ -351,7 +357,7 @@ docker-compose down -v
 
 ---
 
-## ☁️ AWS Cloud Deployment Guide
+## AWS Cloud Deployment Guide
 
 When deploying to an AWS EC2 instance (e.g., `t2.micro` / `t3.micro` free tier with 1GB RAM), memory pressure can cause Java applications or MySQL containers to crash. Setting up **Swap Space** ensures optimal stability.
 
